@@ -42,7 +42,9 @@
 		#include <LittleFS.h>
 		#include <ENC28J60lwIP.h>
 		#include <W5500lwIP.h>
-		#include <RCSwitch.h>
+		#ifndef X4_RELAY_BOARD
+			#include <RCSwitch.h>
+		#endif
 		#include <OpenThingsFramework.h>
 		#include <DNSServer.h>
 		#include <Ticker.h>
@@ -67,6 +69,7 @@
 	#if defined(ESP8266)
 	extern ESP8266WebServer *update_server;
 	extern OTF::OpenThingsFramework *otf;
+	extern bool otf_callbacksInitialised;
 	extern ENC28J60lwIP enc28j60;
 	extern Wiznet5500lwIP w5500;
 	struct lwipEth {
@@ -369,7 +372,9 @@ public:
 	static OTCConfig otc;
 	static IOEXP *mainio, *drio;
 	static IOEXP *expanders[];
-	static RCSwitch rfswitch;
+	#ifndef X4_RELAY_BOARD
+		static RCSwitch rfswitch;
+	#endif
 	static void detect_expanders();
 	static void flash_screen();
 	static void toggle_screen_led();

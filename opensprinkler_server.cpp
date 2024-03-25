@@ -2100,20 +2100,24 @@ void on_ap_upload() { on_sta_upload(); }
 
 void start_server_client() {
 	if(!otf) return;
+	//use static bool otf_callbacksInitialised = false; ??
+	if (otf_callbacksInitialised == false) {
 
-	otf->on("/", server_home);  // handle home page
-	otf->on("/index.html", server_home);
-	otf->on("/update", on_sta_update, OTF::HTTP_GET); // handle firmware update
-	update_server->on("/update", HTTP_POST, on_sta_upload_fin, on_sta_upload);
+		otf->on("/", server_home);  // handle home page
+		otf->on("/index.html", server_home);
+		otf->on("/update", on_sta_update, OTF::HTTP_GET); // handle firmware update
+		update_server->on("/update", HTTP_POST, on_sta_upload_fin, on_sta_upload);
 
-	// set up all other handlers
-	char uri[4];
-	uri[0]='/';
-	uri[3]=0;
-	for(byte i=0;i<sizeof(urls)/sizeof(URLHandler);i++) {
-		uri[1]=pgm_read_byte(_url_keys+2*i);
-		uri[2]=pgm_read_byte(_url_keys+2*i+1);
-		otf->on(uri, urls[i]);
+		// set up all other handlers
+		char uri[4];
+		uri[0] = '/';
+		uri[3] = 0;
+		for (byte i = 0; i < sizeof(urls) / sizeof(URLHandler); i++) {
+			uri[1] = pgm_read_byte(_url_keys + 2 * i);
+			uri[2] = pgm_read_byte(_url_keys + 2 * i + 1);
+			otf->on(uri, urls[i]);
+		}
+		otf_callbacksInitialised = true;
 	}
 	update_server->begin();
 }
@@ -2125,6 +2129,7 @@ void start_server_ap() {
 	String ap_ssid = get_ap_ssid();
 	start_network_ap(ap_ssid.c_str(), NULL);
 	delay(500);
+
 	otf->on("/", on_ap_home);
 	otf->on("/jsap", on_ap_scan);
 	otf->on("/ccap", on_ap_change_config);
@@ -2132,6 +2137,7 @@ void start_server_ap() {
 	otf->on("/update", on_ap_update, OTF::HTTP_GET);
 	update_server->on("/update", HTTP_POST, on_ap_upload_fin, on_ap_upload);
 	otf->onMissingPage(on_ap_home);
+	
 	update_server->begin();
 
 	// set up all other handlers

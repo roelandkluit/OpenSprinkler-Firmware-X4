@@ -32,7 +32,8 @@
 #if defined(ARDUINO)
 	#if defined(ESP8266)
 		ESP8266WebServer *update_server = NULL;
-		OTF::OpenThingsFramework *otf = NULL;
+		OTF::OpenThingsFramework* otf = NULL;
+		bool otf_callbacksInitialised = false;
 		DNSServer *dns = NULL;
 		ENC28J60lwIP enc28j60(PIN_ETHER_CS); // ENC28J60 lwip for wired Ether
 		Wiznet5500lwIP w5500(PIN_ETHER_CS); // W5500 lwip for wired Ether

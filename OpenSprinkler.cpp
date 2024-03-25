@@ -81,7 +81,9 @@ extern ProgramData pd;
 	IOEXP* OpenSprinkler::expanders[MAX_NUM_BOARDS/2];
 	IOEXP* OpenSprinkler::mainio; // main controller IO expander object
 	IOEXP* OpenSprinkler::drio; // driver board IO expander object
-	RCSwitch OpenSprinkler::rfswitch;
+	#ifndef X4_RELAY_BOARD
+		RCSwitch OpenSprinkler::rfswitch;
+	#endif
 	OTCConfig OpenSprinkler::otc;
 
 	String OpenSprinkler::wifi_ssid="";
@@ -777,10 +779,14 @@ void OpenSprinkler::begin() {
 
 #if defined(ESP8266) // ESP8266 specific initializations
 
-	/* check hardware type */
-	if(detect_i2c(ACDR_I2CADDR)) hw_type = HW_TYPE_AC;
-	else if(detect_i2c(DCDR_I2CADDR)) hw_type = HW_TYPE_DC;
-	else if(detect_i2c(LADR_I2CADDR)) hw_type = HW_TYPE_LATCH;
+	#ifdef X4_RELAY_BOARD
+		hw_type = HW_TYPE_X4;
+	#else
+		/* check hardware type */
+		if(detect_i2c(ACDR_I2CADDR)) hw_type = HW_TYPE_AC;
+		else if(detect_i2c(DCDR_I2CADDR)) hw_type = HW_TYPE_DC;
+		else if(detect_i2c(LADR_I2CADDR)) hw_type = HW_TYPE_LATCH;
+	#endif // X4_RELAY_BOARD
 
 	/* detect hardware revision type */
 	if(detect_i2c(MAIN_I2CADDR)) {	// check if main PCF8574 exists
@@ -1200,7 +1206,20 @@ void OpenSprinkler::latch_apply_all_station_bits() {
 void OpenSprinkler::apply_all_station_bits() {
 
 #if defined(ESP8266)
-	if(hw_type==HW_TYPE_LATCH) {
+	if (hw_type == HW_TYPE_X4)
+	{
+		const uint8_t stationGPIO[] = { 16, 14, 12, 13 };
+		//							   D0, D5, D6, D7
+		for (uint8_t i = 0; i < 4; i++)
+		{
+			pinMode(stationGPIO[i], OUTPUT);
+			bool isActive = station_bits[0] & (1 << i);
+			digitalWrite(stationGPIO[i], isActive ? HIGH : LOW);
+			//DEBUG_PRINT(F("Pin: ")); DEBUG_PRINT(i); DEBUG_PRINT(F(" alias: ")); DEBUG_PRINT(stationGPIO[i]);	DEBUG_PRINT(F(" Value: "));	DEBUG_PRINTLN(isActive);
+		}
+		return;		
+	}
+	else if(hw_type==HW_TYPE_LATCH) {
 		// if controller type is latching, the control mechanism is different
 		// hence will be handled separately
 		latch_apply_all_station_bits();
@@ -1825,10 +1844,12 @@ void OpenSprinkler::switch_rfstation(RFStationData *data, bool turnon) {
 
 #if defined(ARDUINO)
 	#if defined(ESP8266)
-	rfswitch.enableTransmit(PIN_RFTX);
-	rfswitch.setProtocol(1);
-	rfswitch.setPulseLength(length);
-	rfswitch.send(turnon ? on : off, 24);
+	#ifndef X4_RELAY_BOARD
+		rfswitch.enableTransmit(PIN_RFTX);
+		rfswitch.setProtocol(1);
+		rfswitch.setPulseLength(length);
+		rfswitch.send(turnon ? on : off, 24);
+	#endif
 	#else
 	send_rfsignal(turnon ? on : off, length);
 	#endif
