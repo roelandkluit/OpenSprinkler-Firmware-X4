@@ -10,3 +10,6 @@ build-1284/*
 !build.sh
 !startOpenSprinkler.sh
 !updater.sh
+/.vs
+/__vm
+/obj/ARM64/Release

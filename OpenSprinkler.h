@@ -37,7 +37,7 @@
 	#include <Arduino.h>
 	#include <Wire.h>
 	#include <SPI.h>
-	#include <RCSwitch.h>
+	//#include <RCSwitch.h> //Duplicate Definition
 	#include "I2CRTC.h"
 
 	#if defined(ESP8266) // for ESP8266

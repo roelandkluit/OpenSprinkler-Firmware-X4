@@ -25,6 +25,7 @@
 #define _DEFINES_H
 
 //#define ENABLE_DEBUG  // enable serial debug
+#define X4_RELAY_BOARD // Enable X4 relay board build
 
 typedef unsigned long ulong;
 
@@ -46,6 +47,7 @@ typedef unsigned long ulong;
 #define HW_TYPE_AC           0xAC   // standard 24VAC for 24VAC solenoids only, with triacs
 #define HW_TYPE_DC           0xDC   // DC powered, for both DC and 24VAC solenoids, with boost converter and MOSFETs
 #define HW_TYPE_LATCH        0x1A   // DC powered, for DC latching solenoids only, with boost converter and H-bridges
+#define HW_TYPE_X4           0xF4   // Forced ESP-X4 Relay board, using X4_RELAY_BOARD precompiler
 #define HW_TYPE_UNKNOWN      0xFF
 
 /** Data file names */
