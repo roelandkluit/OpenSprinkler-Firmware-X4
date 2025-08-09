@@ -13,5 +13,5 @@ build-1284/*
 /.vs
 /__vm
 /obj/ARM64/Release
-external/OpenThings-Framework-Firmware-Library
-external/OpenThings-Framework-Firmware-Library
+OpenThings-Framework-Firmware-Library
+
