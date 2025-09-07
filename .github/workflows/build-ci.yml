@@ -44,13 +44,13 @@ jobs:
         run: pio run --environment d1_mini
 
       - name: Move and rename firmware
-        run: mv .pio/build/d1_mini/firmware.bin ./firmware_os_esp8266.bin
+        run: mv .pio/build/x4_relay/firmware.bin ./firmware_os_x4_esp8266.bin
 
       - name: Upload firmware
         uses: actions/upload-artifact@v4
         with:
           name: firmware
-          path: ./firmware_os_esp8266.bin
+          path: ./firmware_os_x4_esp8266.bin
   build-demo:
     name: Build Demo
     runs-on: ubuntu-latest
